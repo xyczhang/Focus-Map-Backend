@@ -17,13 +17,14 @@ Accepts JSON containing 1–8 subjects and time preferences:
   "subjects": [
     {"name": "Calculus", "deadline": "2026-10-15", "confidence": 2}
   ],
+  "plan_days": 3,
   "available_minutes": 120,
   "session_minutes": 30,
   "break_minutes": 5
 }
 ```
 
-It returns a summary, a list of study/break sessions, and a study tip. Invalid requests return a JSON error with status 400. Upstream generation failures return a safe JSON error with status 502.
+`plan_days` can be 1–7, and `available_minutes` is the time available on each day. The endpoint returns a summary, a day number for every study/break session, and a study tip. Invalid requests return a JSON error with status 400. Upstream generation failures return a safe JSON error with status 502.
 
 ## How the frontend communicates
 

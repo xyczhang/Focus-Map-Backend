@@ -11,6 +11,7 @@ load_dotenv()
 
 
 class StudySession(BaseModel):
+    day: int = Field(ge=1, le=7, description="Day number in the plan, starting at 1")
     type: str = Field(description="Either study or break")
     subject: str = Field(description="Subject name, or Break for breaks")
     minutes: int = Field(gt=0)
@@ -110,6 +111,7 @@ def validate_request(data):
                 return "Deadlines cannot be in the past."
 
     for key, minimum, maximum in (
+        ("plan_days", 1, 7),
         ("available_minutes", 20, 480),
         ("session_minutes", 10, 120),
         ("break_minutes", 1, 30),
@@ -135,11 +137,13 @@ def build_prompt(data):
 Subjects:
 {chr(10).join(subject_lines)}
 
-The complete plan has {data['available_minutes']} minutes available.
+Create a {data['plan_days']}-day plan. Each day has up to {data['available_minutes']} minutes available.
 Preferred study block: {data['session_minutes']} minutes.
 Preferred break: {data['break_minutes']} minutes.
 
-The sum of every session's minutes must not exceed the available time. Include breaks when useful.
+Use day numbers from 1 through {data['plan_days']}. For each individual day, the sum of every
+session's minutes must not exceed {data['available_minutes']} minutes. Spread work sensibly across
+the requested days and include breaks when useful.
 For study sessions, name one specific task. For breaks, use subject "Break" and a short restorative task.
 """
 
